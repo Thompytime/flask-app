@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Price Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .currency {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .currency:last-child {
+            border-bottom: none;
+        }
+        .currency span {
+            font-size: 18px;
+            color: #555;
+        }
+        .currency .value {
+            font-weight: bold;
+            color: #000;
+        }
+        .refresh-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .refresh-button:hover {
+            background-color: #0056b3;
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bitcoin Price Tracker</h1>
+        <div id="data-container">
+            <!-- Currency data will be inserted here -->
+        </div>
+        <button class="refresh-button" onclick="fetchData()">Refresh Data</button>
+        <div id="loading-spinner" class="loading">Loading...</div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const spinner = document.getElementById('loading-spinner');
+            const dataContainer = document.getElementById('data-container');
+
+            try {
+                // Show spinner
+                spinner.style.display = 'block';
+                dataContainer.innerHTML = '';
+
+                const response = await fetch('http://127.0.0.1:5000/data');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Check if data is empty or invalid
+                if (!data || !data.bpi) {
+                    throw new Error('Invalid data received from the API');
+                }
+
+                // Format the data
+                const formattedData = `
+                    <div class="currency">
+                        <span>USD</span>
+                        <span class="value">$${data.bpi.USD.rate}</span>
+                    </div>
+                    <div class="currency">
+                        <span>EUR</span>
+                        <span class="value">€${data.bpi.EUR.rate}</span>
+                    </div>
+                    <div class="currency">
+                        <span>GBP</span>
+                        <span class="value">£${data.bpi.GBP.rate}</span>
+                    </div>
+                `;
+
+                // Display the formatted data
+                dataContainer.innerHTML = formattedData;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                dataContainer.innerHTML = `
+                    <p style="color: red;">Failed to fetch data. Please try again later.</p>
+                `;
+            } finally {
+                // Hide spinner
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Fetch data immediately when the page loads
+        fetchData();
+
+        // Fetch data every 12 hours (in milliseconds)
+        setInterval(fetchData, 12 * 60 * 60 * 1000);
+    </script>
+</body>
+</html>
