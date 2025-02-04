@@ -70,6 +70,7 @@
 <body>
     <div class="container">
         <h1>Bitcoin Price Tracker</h1>
+        <p>Data refreshes every 15 minutes.</p>
         <div id="data-container">
             <!-- Currency data will be inserted here -->
         </div>
@@ -130,8 +131,8 @@
         // Fetch data immediately when the page loads
         fetchData();
 
-        // Fetch data every 30 seconds (in milliseconds)
-        setInterval(fetchData, 30000); // 30 seconds
+        // Fetch data every 15 minutes (in milliseconds)
+        setInterval(fetchData, 15 * 60 * 1000);
     </script>
 </body>
 </html>

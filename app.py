@@ -21,9 +21,9 @@ def fetch_data():
     except Exception as e:
         print(f"Error fetching data: {e}")
 
-# Schedule the fetch_data function to run every 30 seconds
+# Schedule the fetch_data function to run every 15 minutes
 scheduler = BackgroundScheduler()
-scheduler.add_job(fetch_data, 'interval', seconds=30)
+scheduler.add_job(fetch_data, 'interval', minutes=15);
 scheduler.start()
 
 # Fetch data immediately when the server starts
